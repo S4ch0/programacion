@@ -5,7 +5,7 @@
 #define N 100
 
 void Transformar(char *frase1, char *frase2, char c);
-int BuscarCaracter(char *frase1,char caracter);
+void BuscarCaracter(char *frase1,char caracter, int *l);
 void LimpiarCadena(char *cadena);
 
 
@@ -23,17 +23,19 @@ int longitud;
     LimpiarCadena(frase1);
     
     printf("intoduce la letra que sea buscar: ");
+    fflush(stdin);
     scanf("%c",&letra);
-    longitud = BuscarCaracter(frase1, letra);
+    BuscarCaracter(frase1, letra, &longitud);
     printf("%d",longitud);
     
      //creación del vector dinámico
-    frase2 = (char*) calloc( N, sizeof(char));
+    frase2 = (char*) calloc (N, sizeof(char));
     if(frase2==NULL){
         printf("Error al asignar memoria dinamica");
     }else{
         printf("introduce la segunda frase: ");
         fgets(frase2,N,stdin);
+        LimpiarCadena(frase2);
         Transformar(frase1, frase2, letra);
         printf("frase1: %s\n ", frase1);
         printf("frase2: %s\n ", frase2);
@@ -49,7 +51,7 @@ if(cadena[strlen(cadena)-1]=='\n'){
     }
 }
 
-int BuscarCaracter(char *frase, char caracter){
+void BuscarCaracter(char *frase, char caracter, int *l){
     int cont;
     cont=0;
     do{
@@ -57,7 +59,7 @@ int BuscarCaracter(char *frase, char caracter){
             cont++;
         }
     }while((frase[cont]!=caracter)||(frase[cont]!='\0'));
-    return cont;
+    *l=cont;
 }
 
 void Transformar(char *frase1, char *frase2, char c){
