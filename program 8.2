@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define N 100
+
+void Transformar(char *frase1, char *frase2, char c);
+int BuscarCaracter(char *frase1,char caracter);
+void LimpiarCadena(char *cadena);
+
+
+int main(int argc, char **argv){
+    //declaración de variables
+char frase1[N];
+char *frase2;
+char letra;
+int longitud;
+
+    
+    //introdución de la información
+    printf("escriba la primera frase: ");
+    fgets( frase1, N, stdin);
+    LimpiarCadena(frase1);
+    
+    printf("intoduce la letra que sea buscar: ");
+    scanf("%c",&letra);
+    longitud = BuscarCaracter(frase1, letra);
+    printf("%d",longitud);
+    
+     //creación del vector dinámico
+    frase2 = (char*) calloc( N, sizeof(char));
+    if(frase2==NULL){
+        printf("Error al asignar memoria dinamica");
+    }else{
+        printf("introduce la segunda frase: ");
+        fgets(frase2,N,stdin);
+        Transformar(frase1, frase2, letra);
+        printf("frase1: %s\n ", frase1);
+        printf("frase2: %s\n ", frase2);
+        free(frase2);
+    }
+   
+	return 0;
+}
+
+void LimpiarCadena(char *cadena){
+if(cadena[strlen(cadena)-1]=='\n'){
+    cadena[strlen(cadena)-1]='\0';
+    }
+}
+
+int BuscarCaracter(char *frase, char caracter){
+    int cont;
+    cont=0;
+    do{
+        if(frase[cont]!= caracter){
+            cont++;
+        }
+    }while((frase[cont]!=caracter)||(frase[cont]!='\0'));
+    return cont;
+}
+
+void Transformar(char *frase1, char *frase2, char c){
+    int i;
+    i=0;
+    while (i < strlen(frase1) && frase1[i] != c){
+        *(frase2+i)= *(frase1 + i);
+        i++;
+    }
+}
