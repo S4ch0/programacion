@@ -36,11 +36,12 @@ int main(int argc, char **argv) {
             MostrarVector( v2, n);
             printf("el producto escalar del verctor uno y dos es  %f",ProductoEscalar( v1, v2, n));
             
-            free(v2);
+            free (v2);
         }
-            free(v1);
+            free (v1);
         }
         printf("desea repertir la prueba, si la respuesta es si, pulse 1 ");
+        fflush(stdin);
         scanf("%d",&j);
         
     }while(j !=1 );
@@ -52,7 +53,7 @@ void LeerVector(float *vector, int n){
     int i;
     for(i=0; i<n; i++){
         printf("introduce el valor de la posicion v[%d]",i+1);
-        scanf("%f",vector[i]);
+        scanf("%f", vector[i]);
     }    
 }
 
@@ -64,13 +65,13 @@ float ProductoEscalar (float *v1, float *v2, int n){
     for(i=0;i<n;i++){
     elemento = v1[i]*v2[i];
     res=res+elemento;
+        }
     return res;
-    }
 }
 
 void MostrarVector (float *v, int n){
 int i;
     for(i=0;i<n;i++){
-    printf("%g ", *(v+i));
+    printf(" %g ", *(v+i));
     }
 }
