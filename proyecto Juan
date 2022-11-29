@@ -1,0 +1,375 @@
+//
+//  main.c
+//  GEVICAI
+//
+//  Created by Juan Miguel Jiménez Arenas on 26/11/22.
+//
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define N 20
+#define M 4
+#define L 10
+
+typedef struct {
+    int id_avion;
+    char modelo[N];
+    int num_plazas;
+    float vel_max;
+} T_AVION;
+
+typedef struct {
+    int hora;
+    int minuto;
+} T_HORARIO;
+
+typedef struct {
+    int num_vuelo;
+    char origen[M];
+    char destino[M];
+    int id_avion;
+    char día[L];
+    T_HORARIO hora_salida;
+    int num_pas;
+    float precio;
+} T_RECORRIDO;
+
+typedef struct {
+    int id_venta;
+    int num_vuelo;
+    int id_avion;
+    int num_billetes;
+    float precio_total;
+    int tarjeta_embarque;
+} T_VENTA;
+
+void ContarAviones(FILE *pf, int *pcont);
+void ContarRecorridos(FILE *pf, int *pcont);
+void CargaAutomaticaAviones(FILE *pf, T_AVION v_av[]);
+void CargaAutomaticaRecorridos(FILE *pf, T_RECORRIDO v_rec[]);
+void TablonDeOpciones(void);
+void MostrarUnAvion(T_AVION av);
+void MostrarAviones(T_AVION v[], int num_avi);
+void MostrarUnRecorrido(T_RECORRIDO rec);
+void MostrarRecorridos(T_RECORRIDO v[], int num_rec);
+int BuscarAvion(T_AVION v_av[], int num_av, int id_avion, int *num_max);
+int BuscarRecorrido(T_RECORRIDO v_rec[], int num_rec, int num_vuelo);
+int RecorridoSeleccionado(T_RECORRIDO v[], int num_rec, char *origen, char *destino, T_RECORRIDO *rec_temprano);
+int VentaBilletes(T_AVION v_av[], int num_av, T_RECORRIDO v_rec[], int num_rec, int num_vuelo, int num_billetes, T_VENTA *vent);
+void MostrarVenta(T_VENTA vent);
+void BuscarRecorridosBaratos(T_RECORRIDO v_rec[], int num_rec, T_AVION v_av[], int num_av, float precio);
+void LimpiarCadena (char s[]);
+//-----------------------------------------------------------------------------------------------------------------
+int main(int argc, const char * argv[]) {
+    srand((unsigned int)time(NULL));
+    FILE *pf_av;
+    FILE *pf_rec;
+    int num_av;
+    int num_rec;
+    T_AVION *v_av;
+    T_RECORRIDO *v_rec;
+    int opcion;
+    char origen[M];
+    char destino[M];
+    int num_recorridos;
+    T_RECORRIDO rec_minimo;
+    int num_vuelo;
+    int num_billetes;
+    T_VENTA vent;
+    int venta;
+    float precio_maximo;
+    
+    printf ("========== BIENVENID@ A LA AGENCIA DE VIAJES ICAI ==========");
+    
+    pf_av = fopen("/Users/juanmi/desktop/aviones.txt", "r");
+    pf_rec = fopen("/Users/juanmi/desktop/recorridos.txt", "r");
+    if (pf_av == NULL || pf_rec == NULL) {
+        if (pf_av == NULL) {
+            perror("ERROR, no se puede abrir aviones.txt\n");
+            fclose(pf_rec);
+        } else {
+            perror("ERROR, no se puede abrir recorridos.txt\n");
+            fclose(pf_av);
+        }
+    } else {
+        ContarAviones(pf_av, &num_av);
+        printf ("\n\nEl numero de aviones de la compañia es %d\n", num_av);
+        ContarRecorridos(pf_rec, &num_rec);
+        printf ("El numero de recorridos asignados es %d\n", num_rec);
+        
+        v_av = (T_AVION *)calloc(num_av, sizeof(T_AVION));
+        v_rec = (T_RECORRIDO *)calloc(num_rec, sizeof(T_RECORRIDO));
+        if (v_av == NULL || v_rec == NULL) {
+            if (v_av == NULL) {
+                printf ("ERROR al asignar memoria al el vector de aviones\n");
+                free(v_rec);
+            } else {
+                printf ("ERROR al asignar memoria al el vector de recorridos\n");
+                free(v_av);
+            }
+            fclose(pf_av);
+            fclose(pf_rec);
+        } else {
+            CargaAutomaticaAviones(pf_av, v_av);
+            CargaAutomaticaRecorridos(pf_rec, v_rec);
+            do {
+                TablonDeOpciones();
+                printf ("\nPor favor, introduzca un numero para continuar: ");
+                scanf ("%d", &opcion);
+                switch (opcion) {
+                    case 1:
+                        MostrarAviones(v_av, num_av);
+                        break;
+                    case 2:
+                        MostrarRecorridos(v_rec, num_rec);
+                        break;
+                    case 3:
+                        getchar();
+                        printf("Introduzca un aeropuerto de origen: ");
+                        fgets(origen, M, stdin);
+                        LimpiarCadena(origen);
+                        getchar();
+                        printf("Introduzca un aeropuerto de destino: ");
+                        fgets(destino, M, stdin);
+                        LimpiarCadena(destino);
+                        num_recorridos = RecorridoSeleccionado(v_rec, num_rec, origen, destino, &rec_minimo);
+                        if (num_recorridos != 0) {
+                            printf ("\nHAY %d RECORRIDOS ENTRE %s Y %s\nRECORRIDO MAS TEMPRANO: ", num_recorridos, origen, destino);
+                            MostrarUnRecorrido(rec_minimo);
+                        } else {
+                            getchar();
+                            printf ("NO HAY VUELOS ENTRE %s Y %s\n", origen, destino);
+                        }
+                        break;
+                    case 4:
+                        printf ("Introduzca el numero de vuelo: ");
+                        scanf("%d", &num_vuelo);
+                        printf ("Introduzca el numero de billetes que desea: ");
+                        scanf("%d", &num_billetes);
+                        venta = VentaBilletes(v_av, num_av, v_rec, num_rec, num_vuelo, num_billetes, &vent);
+                        if (venta == 1) {
+                            MostrarVenta(vent);
+                        } else {
+                            printf ("ERROR AL REALIZAR LA VENTA\n");
+                        }
+                        break;
+                    case 5:
+                        printf ("Indique el precio maximo con el que desea adquirir los billetes: ");
+                        scanf("%f", &precio_maximo);
+                        BuscarRecorridosBaratos(v_rec, num_rec, v_av, num_av, precio_maximo);
+                        break;
+                    case 6:
+                        break;
+                    default:
+                        printf ("ERROR, EL NUMERO INTRODUCIDO NO ES VALIDO\n");
+                }
+            } while (opcion != 6);
+        }
+        free(v_av);
+        free(v_rec);
+    }
+    return 0;
+}
+//-----------------------------------------------------------------------------------------------------------------
+
+void ContarAviones(FILE *pf, int *pcont) {
+    int ctrl;
+    T_AVION avion;
+    
+    *pcont = 0;
+    rewind(pf);
+    do {
+        ctrl = fscanf(pf, "%d %s %d %f", &avion.id_avion, avion.modelo, &avion.num_plazas, &avion.vel_max);
+        if (ctrl == 4) {
+            (*pcont)++;
+        }
+    } while (ctrl == 4);
+}
+
+void ContarRecorridos(FILE *pf, int *pcont) {
+    int ctrl;
+    T_RECORRIDO recorrido;
+    
+    *pcont = 0;
+    do {
+        ctrl = fscanf(pf, "%d %s %s %d %s %d %d %d %f", &recorrido.num_vuelo, recorrido.origen, recorrido.destino, &recorrido.id_avion, recorrido.día, &recorrido.hora_salida.hora, &recorrido.hora_salida.minuto, &recorrido.num_pas, &recorrido.precio);
+        if (ctrl == 9) {
+            (*pcont)++;
+        }
+    } while (ctrl == 9);
+}
+
+void CargaAutomaticaAviones(FILE *pf, T_AVION v_av[]) {
+    int ctrl;
+    T_AVION avion;
+    int i;
+    
+    rewind(pf);
+    i = 0;
+    do {
+        ctrl = fscanf(pf, "%d %s %d %f", &avion.id_avion, avion.modelo, &avion.num_plazas, &avion.vel_max);
+        if (ctrl == 4) {
+            v_av[i] = avion;
+            i++;
+        }
+    } while (ctrl == 4);
+}
+
+void CargaAutomaticaRecorridos(FILE *pf, T_RECORRIDO v_rec[]) {
+    int ctrl;
+    T_RECORRIDO recorrido;
+    int i;
+    
+    rewind(pf);
+    i = 0;
+    do {
+        ctrl = fscanf(pf, "%d %s %s %d %s %d %d %d %f", &recorrido.num_vuelo, recorrido.origen, recorrido.destino, &recorrido.id_avion, recorrido.día, &recorrido.hora_salida.hora, &recorrido.hora_salida.minuto, &recorrido.num_pas, &recorrido.precio);
+        if (ctrl == 9) {
+            v_rec[i] = recorrido;
+            i++;
+        }
+    } while (ctrl == 9);
+}
+
+void TablonDeOpciones(void) {
+    printf ("\n~ TABLON DE OPCIONES ~");
+    printf ("\n\t1) VER AVIONES DE LA AGENCIA");
+    printf ("\n\t2) VER RECORRIDOS DE LA AGENCIA");
+    printf ("\n\t3) SELECCIONAR RECORRIDO CONCRETO");
+    printf ("\n\t4) COMPRAR UN BILLETE");
+    printf ("\n\t5) BUSCAR RECORRIDOS MÁS BARATOS");
+    printf ("\n\t6) SALIR\n");
+}
+
+int RecorridoSeleccionado(T_RECORRIDO v[], int num_rec, char *origen, char *destino, T_RECORRIDO *rec_temprano) {
+    int i;
+    int cont_recorridos;
+    T_HORARIO temprano;
+    temprano.hora = 25;
+    temprano.minuto = 60;
+    
+    cont_recorridos = 0;
+    for (i = 0; i < num_rec; i++) {
+        if (strcmp(origen, v[i].origen) == 0 && strcmp(destino, v[i].destino) == 0) {
+            cont_recorridos++;
+            if ((temprano.hora > v[i].hora_salida.hora) ||
+                (temprano.hora == v[i].hora_salida.hora && temprano.minuto > v[i].hora_salida.minuto)) {
+                    temprano = v[i].hora_salida;
+                    *rec_temprano = v[i];
+            }
+        }
+    }
+    return cont_recorridos;
+}
+
+void MostrarUnAvion(T_AVION av) {
+    printf("\nAVION %d\nNUM. MODELO: %s\nNUM. PLAZAS: %d\nVELOCIDAD MAXIMA: %.2f\n",
+           av.id_avion, av.modelo, av.num_plazas, av.vel_max);
+}
+
+void MostrarAviones(T_AVION v[], int num_avi) {
+    int i;
+    
+    for (i = 0; i < num_avi; i++) {
+        MostrarUnAvion(v[i]);
+    }
+}
+
+void MostrarUnRecorrido(T_RECORRIDO rec) {
+    printf("\nNUMERO DE VUELO: %d\nCOD. AEROPUERTO DE ORIGEN: %s\nCOD. AEROPUERTO DE DESTINO: %s\nID. AVION ASIGNADO: %d\nDIA DE LA SEMANA: %s\nHORA DE SALIDA: %d HORAS Y %d MINUTOS\nNUMERO DE PASAJEROS: %d\nPRECIO DEL BILLETE: %.2f\n", rec.num_vuelo, rec.origen, rec.destino, rec.id_avion, rec.día, rec.hora_salida.hora, rec.hora_salida.minuto, rec.num_pas, rec.precio);
+}
+
+void MostrarRecorridos(T_RECORRIDO v[], int num_rec) {
+    int i;
+    
+    for (i = 0; i < num_rec; i++) {
+        MostrarUnRecorrido(v[i]);
+    }
+}
+
+int BuscarAvion(T_AVION v_av[], int num_av, int id_avion, int *num_max) {
+    int res;
+    int i;
+    
+    res = -1;
+    for (i = 0; i < num_av && res == -1; i++) {
+        
+        if (v_av[i].id_avion == id_avion) {
+            res = i;
+            *num_max = v_av[i].num_plazas;
+        }
+    }
+    return res;
+}
+
+int BuscarRecorrido(T_RECORRIDO v_rec[], int num_rec, int num_vuelo) {
+    int res;
+    int i;
+    
+    res = -1;
+    for (i = 0; i < num_rec && res == -1; i++) {
+        if (v_rec[i].num_vuelo == num_vuelo) {
+            res = i;
+        }
+    }
+    return res;
+}
+
+int VentaBilletes(T_AVION v_av[], int num_av, T_RECORRIDO v_rec[], int num_rec, int num_vuelo, int num_billetes, T_VENTA *vent) {
+    int i_rec;
+    int i_av;
+    int res;
+    int num_max;
+    
+    i_rec = BuscarRecorrido(v_rec, num_rec, num_vuelo);
+    if (i_rec < 0) {
+        res = 0;
+    } else {
+        i_av = BuscarAvion(v_av, num_av, v_rec[i_rec].id_avion, &num_max);
+        if (i_av < 0) {
+            res = 0;
+        } else {
+            if (v_rec[i_rec].num_pas + num_billetes > num_max) {
+                res = num_max - v_rec[i_rec].num_pas - num_billetes;
+            } else {
+                vent->id_venta = 1000000*((float)rand()/RAND_MAX);
+                vent->num_vuelo = num_vuelo;
+                vent->id_avion = v_rec[i_rec].id_avion;
+                vent->num_billetes = num_billetes;
+                vent->precio_total = num_billetes * v_rec[i_rec].precio;
+                vent->tarjeta_embarque = 0;
+                v_rec[i_rec].num_pas += num_billetes;
+                res = 1;
+            }
+        }
+    }
+    return res;
+}
+
+void MostrarVenta(T_VENTA vent) {
+    printf ("\nEsta ha sido su venta:\nVENTA: %d\nNUMERO DE VUELO: %d\nID DEL AVION: %d\nNUMERO DE BILLETES COMPRADOS: %d\nPRECIO FINAL: %.2f€\n", vent.id_venta, vent.num_vuelo, vent.id_avion, vent.num_billetes, vent.precio_total);
+}
+
+void BuscarRecorridosBaratos(T_RECORRIDO v_rec[], int num_rec, T_AVION v_av[], int num_av, float precio) {
+    int i = 0;
+    int avion_valido = 0;
+    int num_max = 0;
+    
+    for (i = 0; i < num_rec; i++) {
+        if (v_rec[i].precio <= precio) {
+            avion_valido = BuscarAvion(v_av, num_av, v_rec[i].id_avion, &num_max);
+            if (avion_valido > 0 && v_rec[i].num_pas < num_max) {
+                MostrarUnRecorrido(v_rec[i]);
+            }
+        }
+    }
+}
+
+void LimpiarCadena (char s[]) {
+    if (strlen(s - 1) == '\n') {
+        s[strlen(s - 1)] = '\0';
+    }
+}
