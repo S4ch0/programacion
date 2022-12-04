@@ -240,4 +240,4 @@ en programacion    0,1,2,3,4
                 - SEEK_SET -> desde la posicion inicial
                 
     -cuando buscas una estructura que cumpla un dato y el programa lo detercta, para detectarlo lee la linea por lo que el puntero 
-    se queda apuntando a la siguiente linea y por ello tienes que retroceder a la linea anterior (SEEK_CUR)
+    se queda apuntando a la siguiente linea y por ello tienes que retroceder a la linea anterior fseek(pfile, (-1)*T_BLA, SEEK_CUR);
