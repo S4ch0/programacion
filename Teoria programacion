@@ -81,9 +81,9 @@ en programacion    0,1,2,3,4
     
     -declaramos:
         -int *pa
-        pa=&pa;
+        pa=&a;
         -en este caso pa apunta a la direccion de memoria de a
-        -*pa= te da el valor de la direccion de memoria que tiene registrada pa
+        -*pa= te da el valor de la direccion de memoria que tiene registrada pa (es decir el valor de a)
         -cuando declaramos una funcion mandamos la direccion de memoria para asi poder hacer moficaciones en ese valor en el main;
     sino seria como enviar una copia.
         -si en lugar de enviar el puntero mandamos a y b el main no ve que hemos modificado los valores de a y b
