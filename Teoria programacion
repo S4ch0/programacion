@@ -1,0 +1,242 @@
+recomendacion para la practica de examenes
+    
+    17-18 y 19-20
+
+clase 2
+-funciones
+-vectores
+-matrices
+-estructuras de datos
+
+clase 3-
+-punteros
+-asignacion de memoria dinamica
+clase 4 
+-ficheros
+
+
+
+clase 2:
+*funciones* 
+
+-simplificar el codigo principal(main)
+    -dividiendo el programa en distintos subprogamas //<math.h> pow
+    -prototipo antes del main
+    -programamos la fucnion despues del main
+    -puede una funcion devolver mas de una variable? ->paso por variable(NO)
+                                                     -paso por referencia (punteros) (void)-> si
+    - podemos utilizar variables del main que no hemos enviado a la funcion? -> no.
+    -pueden llamar a otra funcion dentro de la funcion? -> si
+        
+        float suma (int a, int b)
+        //float (tipo de variable que devuelve); a, b son las variables que recibe la funcion
+        
+ int main(){
+     int a,b;
+     float c
+     a=4;
+     b=3;
+     c= float suma(a,b);
+ }       
+ float suma()
+---------------------------------------------check list de como trabajo con funciones---------------------------------------------------
+    
+    1) planteamos prototipo;
+        int identificaprimo(int n);
+    2) plantear que devuelve la funcion
+    3) planteamos el main considerando que la funcion, funciona
+    4) planteamos las funciones teniendo en cuenta  lo que recibe y lo que devuelve.
+    
+    
+    
+*vectores*
+    
+-nuestro concepto [1,2,3,4,5]
+en programacion    0,1,2,3,4
+    
+    definicion de un vector
+    int vector [N]
+//int tipo de variable de todos los elementos ; vecor es el nombre que le damos, N es el tamaño maximo.
+//N tiene que ser un valor lo suficientemente grande.
+
+    - accedemos a cada uno de los elementos mediante v[i]; siendo la i la posicion de cada termino
+    - la dimension util (dim); es la que luego utilizamos.
+    - v [3] => 2 (en el ejemplo de arriba);
+    - la dimension tiene que ser <= N
+    
+    
+*matrices*
+    
+    - declaracion: int mat[N][M]
+//int el tipo de variable; mat el nombre; N el numero de filas maxima ; M el numero decolumnas maxima 
+    - Accedemos a cada elemnto mat[a][b]; elemento de la fila a, columna b;
+    
+*punteros*
+
+    -contiene una direccion de memoria
+    -nociones previas
+    -variable a 
+        -valor -> 
+        -posicion de memoria -> el puntero guarda la posicion o direccion de la variable
+    
+    -declaramos:
+        -int *pa
+        pa=&pa;
+        -en este caso pa apunta a la direccion de memoria de a
+        -*pa= te da el valor de la direccion de memoria que tiene registrada pa
+        -cuando declaramos una funcion mandamos la direccion de memoria para asi poder hacer moficaciones en ese valor en el main;
+    sino seria como enviar una copia.
+        -si en lugar de enviar el puntero mandamos a y b el main no ve que hemos modificado los valores de a y b
+        -(*pcliente).nombre == pcliente->nombre
+     
+   
+*files*
+        
+    -siempre se pone a puntero
+    -el manejo se pone simpre entre comillas ("w");
+    - tras el uso del fichero hay que cerrarlo.
+    - f y scanf devuelven el numero de lecturas.
+        
+        
+        FILE *fp;
+        int ctrl
+        fdatos = fopen("salida.txt","r") //la w significa abrir el fichero para escrituta; si no existe se crea y si existe de destruye.
+        if(fdatos ==NULL){               //la r es para lectura
+                                         //modo a anade al fianl el 
+                  printf ("no se puede abrir salida");
+        }else{
+            i=0;
+            do{
+               ctrl = fscanf(fdatos,"%d %d %d %s %f", &personas[i].fechanac.dia,
+               &personas[i].fechanac.mes, &personas[i].fechanac.anyo, &personas[i].nombre, &personas[i].saldo);
+    i++; 
+            }while(ctrl == 5)
+            fclose(fdatos); //es como free con los vectores dinamicos; siempre hay que cerrarlo
+        }
+        
+*cadenas de caracteres*
+
+    #include <string.h>
+    #include <ctype.h> //para toupper y tolower
+    
+    char guarada-> aguanta un golpe de teclado
+    -inicializacion y declaracion
+        char cadena[N] (tipo de variable)(nombre)(dimension maxima)
+    -para racceder a cada componente usamos un bucle for "for(i=0;i<strlen(cadena);i++)"
+    -funciones mas típicas
+        -> mostrar en pantalla 
+            printf("%s",cadena);
+        -> funcion puts (es igual que el printf)
+            puts(cadena)
+        -> leer una cadena
+            -lo primero limpiar la entada (fflush(stdin))
+            -scanf("%s",frase )   no lee la frase y no hace falta & (al ser un vector)
+            -gets(frase) lee la frase entera
+            -fgets(frase,N,stdin) lee la frase entera y se asegura que no ocupa mas de lo declarado
+    -funciones especiales 
+        -> strcpy - copiar cadenas 
+        -> strlen - medir la dimension que estamos utilizando mide hasta el primer "\0"
+        -> strcmp - compara cadenas (te dice su son iguales)(si son iguales devuelve un 0)
+    
+*memoria dinamica*
+    -declaracion
+    int *vector;
+    int n;
+    printf("introduce el tamano del vector...");
+    scanf("%d",&n);
+    vector= (int*) calloc (n, sizeof(int)) 
+    if(vector==NULL){
+        error al asignar memoria
+    }else{
+        free(vector);
+    }
+    
+*estructuras*
+    -es un tipo de dato definido por el programador 
+        -solventa limitaciones de los vectores
+    -definicion de la estructura
+        typedef struct{
+            int campo;
+            char campo;
+            double campo;
+            float campo;  (cualquier tipo de variable u estructura)
+        }T_NOMBRESTRUCTURA
+    -operador para acceder a los campos
+        -'.' lo utilizamos para acceder a los campos
+        -'->' lo utilizamos con punteros
+            -(*estructura).campo == estructura->campo
+    -puedes igualar una estructura a un vector de ese tipo y asi guardar todos los datos de esa persona en la posicion de un vector
+         T_AMIGO BFF;
+         T_AMIGOS amigos[N];
+         amigos[i]=BFF;
+         -para comparar convertimos horario en un numero ("para comparar cual es antes")
+        - horario.hora*100 + horario.minutos
+        - horario.hora*10000 + horario.minutos*100 + horario.segundos 
+        
+*ficheros de texto*
+    
+    -definicion
+    -modos de apertura
+                -r: lectura
+                -w: escritura //si existe algo lo borra!! si no existe lo crea
+                -r+: lectura y escritura //puntero al principio del fichero
+                -w+: escritura y lectura  //si existe algo lo borra!! si no existe lo crea
+                
+        FILE *pfile
+        pfile= fopen("ventas.txt","modo de apertura")
+    -cursor
+        se usa mviendo parte de la dificultas reside en conocer donde se encuentra;
+    -lectura de datos 
+        -ctrl=fscanf(pfile,"variables", direccion de las variables)
+            -ctrl vale el numero de variables
+    -escritura 
+        -fprintf(pfile, "grupos",variables);
+    -rewind (se usa siempre)
+        rewind(pfile);
+    -cerrar fclose(pfile);
+    
+    -crear un vector de estructura dinámico de tamaño del fichero
+    recorremos el fichero con un auxiliar contando el numero de veces que se recorre
+    posteriormente creamos un vector de tipo estructura con calloc con el tamaño del
+    numero de veces que recorrio el fichero y finalmente hacemos el do while para igualar
+    la informacion del fichero a los datos de la estructura.
+    
+*ficheros binarios*
+- son archivos punto dat; son leibles...
+- más comodo modificarlos 'fseek(...)'
+- trabajamos con estructuras
+- trabajamos directamente sobre el fichero (aunque tambien se puede trabajr en el rpograma)
+    
+    -definicion 
+        FILE *pfile;
+    -apertura
+    pfile = fopen("fich.dat","modo");
+    
+    -los modos son los mismos que en binario pero con una b. eg (r)->(rb)
+        - rb
+        - wb
+        - wb+
+        - rb+
+    -lectura   
+        ctrl = fread(&estructura, sizeof(T_ESTRUCTURA), 1, pfile) 
+            - &estructura es el nombre de la variable en donde se guarda
+            - tamaño que va a leer
+            - 1 -> el numero de estrucuturas que espera leer una vuelta
+            - no conocemos el tamaño asique leemos con un do while(ctrl==1);
+            - si queremos guardar venta[i]; por ejemplo porque sino rescribimos
+            
+    -escritura
+        fwrite(&estructura, sizeof(T_ESTRUCTURA), 1, pfile);
+        
+    - modificar una de las entradas del fichero
+        fseek(pfile, (-1) *sizeof(T_ESTRUCTURA), desde nos queremos mover)
+          eg fseek (pfile, (-1)*sizeof(T_ESTRUCUTRA), SEEK_CUR);
+            -1 nombre del archivo
+            -2  eg (-1)*(T_ESTRCUTURA) cuanto nos queremos mover;
+            - desde donde nos queremos mover 
+                - SEEK_CUR -> desde la posicion actual
+                - SEEK_END -> desde la posicion final
+                - SEEK_SET -> desde la posicion inicial
+                
+    -cuando buscas una estructura que cumpla un dato y el programa lo detercta, para detectarlo lee la linea por lo que el puntero 
+    se queda apuntando a la siguiente linea y por ello tienes que retroceder a la linea anterior (SEEK_CUR)
