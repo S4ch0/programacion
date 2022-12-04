@@ -56,12 +56,12 @@ en programacion    0,1,2,3,4
     
     definicion de un vector
     int vector [N]
-//int tipo de variable de todos los elementos ; vecor es el nombre que le damos, N es el tamaño maximo.
+//int tipo de variable de todos los elementos ; vector es el nombre que le damos, N es el tamaño maximo.
 //N tiene que ser un valor lo suficientemente grande.
 
     - accedemos a cada uno de los elementos mediante v[i]; siendo la i la posicion de cada termino
     - la dimension util (dim); es la que luego utilizamos.
-    - v [3] => 2 (en el ejemplo de arriba);
+    - v [3] => 4 (en el ejemplo de arriba);
     - la dimension tiene que ser <= N
     
     
