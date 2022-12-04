@@ -68,15 +68,15 @@ en programacion    0,1,2,3,4
 *matrices*
     
     - declaracion: int mat[N][M]
-//int el tipo de variable; mat el nombre; N el numero de filas maxima ; M el numero decolumnas maxima 
-    - Accedemos a cada elemnto mat[a][b]; elemento de la fila a, columna b;
+//int el tipo de variable; mat el nombre; N el numero de filas maxima ; M el numero de columnas maxima 
+    - Accedemos a cada elemento mat[a][b]; elemento de la fila a, columna b;
     
 *punteros*
 
     -contiene una direccion de memoria
     -nociones previas
     -variable a 
-        -valor -> 
+        -valor -> (*pa) el valor contenido en la direcion de memoria pa
         -posicion de memoria -> el puntero guarda la posicion o direccion de la variable
     
     -declaramos:
