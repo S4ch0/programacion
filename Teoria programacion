@@ -98,7 +98,7 @@ en programacion    0,1,2,3,4
     - f y scanf devuelven el numero de lecturas.
         
         
-        FILE *fp;
+        FILE *fdatos;
         int ctrl
         fdatos = fopen("salida.txt","r") //la w significa abrir el fichero para escrituta; si no existe se crea y si existe de destruye.
         if(fdatos ==NULL){               //la r es para lectura
@@ -137,6 +137,7 @@ en programacion    0,1,2,3,4
         -> strcpy - copiar cadenas 
         -> strlen - medir la dimension que estamos utilizando mide hasta el primer "\0"
         -> strcmp - compara cadenas (te dice su son iguales)(si son iguales devuelve un 0)
+        -> strcat (cad1, cad2) - añade la cadena 2 al final de la cadena 1.  
     
 *memoria dinamica*
     -declaracion
